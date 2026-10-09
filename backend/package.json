@@ -18,6 +18,7 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@types/cookie": "^0.6.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.4",
@@ -26,9 +27,11 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "cookie": "^2.0.1",
     "cors": "^2.8.6",
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
-    "mongoose": "^9.11.1"
+    "mongoose": "^9.11.1",
+    "socket.io": "^4.8.4"
   }
 }
