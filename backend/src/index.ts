@@ -8,7 +8,8 @@ import corsOption from "./middlewares/cors-config.js";
 import printBanner from "./function/strart-banner.js";
 import connectDB from "./config/db.config.js";
 import initializeSocket from "./socket/index.js";
-import genUserID from "./function/gen-id.js";
+import userRoute from "./routes/user.routes.js";
+
 
 const app = express();
 const server = createServer(app);
@@ -33,26 +34,13 @@ app.get("/", (_req: Request, res: Response) => {
     });
 });
 
-// Create User Route Endpoint
-app.post("/api/gen-user", (_req: Request, res: Response) => {
-    res.cookie("echomind_user", genUserID(), {
-        httpOnly: true,
-        secure: config.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-        path: "/",
-    });
-    res.status(200).json({
-        success: true,
-        message: "New User Created Successfully",
-        timestamp: new Date().toISOString()
-    });
-});
-
 // Health Check Endpoint
 app.get("/health", (_req: Request, res: Response) => {
     res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
 });
+
+// Defined API Endpoints
+app.use("/api", userRoute)
 
 // Global 404 Handler
 app.use(notFoundError);
