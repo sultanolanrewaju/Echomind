@@ -2,6 +2,11 @@ import { Server, Socket } from 'socket.io';
 import { parseCookie } from "cookie"
 import { Server as HttpServer } from 'http';
 import config from '../config/app.config.js';
+import extractCookie, { Cookie } from '../function/extract-cookie.js';
+import { UserModel } from '../models/user.model.js';
+import { ChunkPayload, RequestPost } from '../types/index.js';
+import uploadFile from "../function/upload-file.js"
+import publishPost from '../function/publish-post.js';
 
 let io: Server | null = null;
 const connections = new Map<string, Socket>();
@@ -33,24 +38,37 @@ const initializeSocket = (httpServer: HttpServer): Server => {
     io.use((socket: Socket, next) => {
         const reqCookie = socket.handshake.headers.cookie;
         const cookies = parseCookie(reqCookie as string);
-        const userID = cookies.echomind_user
+        const cookie = cookies.echomind_user
+        const parsedCookie = extractCookie(cookie as string)
 
-        if (!userID) {
-            return next(new Error("Unauthorized: Missing userID"));
+        if (!parsedCookie) {
+            return next(new Error("Unauthorized : user cookie is invalid"));
         }
-        socket.data.userID = userID;
+
+        socket.data.userID = parsedCookie.userID;
+        socket.data.raw_device_token = parsedCookie.raw_device_token;
         next();
     });
 
-    io.on('connection', (socket: Socket) => {
+    io.on('connection', async (socket: Socket) => {
         // Store Connection
         const userID = socket.data.userID
         connections.set(userID, socket);
         console.log(`\n[+] Socket Connected : ${userID} | Total Active : ${connections.size}`);
 
         // Send When Coonected User
-        let conn = { userID, timestamp: new Date().toISOString() }
-        getSocketById(userID)?.emit("connection_ack", conn)
+        const user = await UserModel.findOne({ user_id: userID })
+        getSocketById(userID)?.emit("connection_ack", user)
+
+
+        // Uploading Post Files
+        socket.on('file-upload:chunk', async (data: ChunkPayload, ack) => {
+            await uploadFile(data, ack);
+        });
+        // Publish New Post
+        socket.on("publish-post", async (post: RequestPost) => {
+            await publishPost(post)
+        })
 
         // Handle Disconnect & Cleanup Socket Server
         socket.on('disconnect', (reason) => {
