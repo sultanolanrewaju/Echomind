@@ -9,8 +9,11 @@ import printBanner from "./function/strart-banner.js";
 import connectDB from "./config/db.config.js";
 import initializeSocket from "./socket/index.js";
 import userRoute from "./routes/user.routes.js";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const server = createServer(app);
 
@@ -24,6 +27,8 @@ app.use(cors(corsOption));
 // Set JSON Body Parser
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+const uploadDir = path.join(__dirname, "../uploads/")
+app.use('/uploads', express.static(uploadDir));
 
 // Index Route Endpoint
 app.get("/", (_req: Request, res: Response) => {

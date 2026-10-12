@@ -7,6 +7,7 @@ import { UserModel } from '../models/user.model.js';
 import { ChunkPayload, RequestPost } from '../types/index.js';
 import uploadFile from "../function/upload-file.js"
 import publishPost from '../function/publish-post.js';
+import fetchPost from '../function/fetch-post.js';
 
 let io: Server | null = null;
 const connections = new Map<string, Socket>();
@@ -66,8 +67,12 @@ const initializeSocket = (httpServer: HttpServer): Server => {
             await uploadFile(data, ack);
         });
         // Publish New Post
-        socket.on("publish-post", async (post: RequestPost) => {
-            await publishPost(post)
+        socket.on("publish-post", async (post) => {
+            await publishPost(post, userID)
+        })
+        // Fetch all post
+        socket.on("fetch-post", async (data, callback) => {
+            await fetchPost(data?.limit || 5, data?.skip || 0, callback)
         })
 
         // Handle Disconnect & Cleanup Socket Server

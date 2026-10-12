@@ -1,13 +1,19 @@
 import { appendFileSync, existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { ChunkPayload, type AckCallback } from "../types/index.js";
+import { fileURLToPath } from "node:url";
+
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const uploadFile = async (file: ChunkPayload, ack?: AckCallback): Promise<void> => {
     try {
         const { fileName, chunk, offset, totalSize } = file;
+        const fileLoc = `/uploads/${fileName}`
 
         // Ensure uploads directory exists
-        const uploadsDir = path.join(process.cwd(), 'uploads');
+        // const uploadsDir = path.join(process.cwd(), 'uploads');
+        const uploadsDir = path.join(__dirname, "../../uploads/")
         if (!existsSync(uploadsDir)) {
             mkdirSync(uploadsDir, { recursive: true });
         }
@@ -22,14 +28,13 @@ const uploadFile = async (file: ChunkPayload, ack?: AckCallback): Promise<void> 
 
         // Check if entire file upload is finished
         if (currentSize >= totalSize) {
-            console.log(`Finished uploading: ${fileName}`);
             if (typeof ack === 'function') {
-                ack({ filePath: uploadPath, success: true, completed: true, progress: 100 });
+                ack({ filePath: fileLoc, success: true, completed: true, progress: 100 });
             }
         } else {
             const progress = Math.round((currentSize / totalSize) * 100);
             if (typeof ack === 'function') {
-                ack({ filePath: uploadPath, success: true, completed: false, progress });
+                ack({ filePath: fileLoc, success: true, completed: false, progress });
             }
         }
     } catch (error) {
