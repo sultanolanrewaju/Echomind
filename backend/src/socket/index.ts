@@ -8,6 +8,10 @@ import { ChunkPayload, RequestPost } from '../types/index.js';
 import uploadFile from "../function/upload-file.js"
 import publishPost from '../function/publish-post.js';
 import fetchPost from '../function/fetch-post.js';
+import getUserProfile from '../function/get-user-profile.js';
+import { Comment } from '../models/post.model.js';
+import createComment from '../function/create-comment.js';
+import toggleLike from '../function/like-unlike.js';
 
 let io: Server | null = null;
 const connections = new Map<string, Socket>();
@@ -60,6 +64,7 @@ const initializeSocket = (httpServer: HttpServer): Server => {
         // Send When Coonected User
         const user = await UserModel.findOne({ user_id: userID })
         getSocketById(userID)?.emit("connection_ack", user)
+        await getUserProfile(userID)
 
 
         // Uploading Post Files
@@ -73,6 +78,14 @@ const initializeSocket = (httpServer: HttpServer): Server => {
         // Fetch all post
         socket.on("fetch-post", async (data, callback) => {
             await fetchPost(data?.limit || 5, data?.skip || 0, callback)
+        })
+        // Handle Like/Unlike 
+        socket.on("handle-like", async (postID: string) => {
+            await toggleLike(postID, userID)
+        })
+        // Create new comment
+        socket.on("create-comment", async (postID: string, comment: Comment) => {
+            await createComment(postID, comment)
         })
 
         // Handle Disconnect & Cleanup Socket Server
