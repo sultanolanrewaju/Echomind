@@ -1,0 +1,162 @@
+/* Light Theme Tokens */
+.theme-light {
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --skeleton-base: #e2e8f0;
+  --skeleton-shine: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  --badge-bg: #f1f5f9;
+  --badge-color: #475569;
+  --shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+}
+
+/* Dark Theme Tokens */
+.theme-dark {
+  --card-bg: #1e293b;
+  --card-border: #334155;
+  --skeleton-base: #334155;
+  --skeleton-shine: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  --badge-bg: #0f172a;
+  --badge-color: #94a3b8;
+  --shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+}
+.sk-post-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s ease;
+}
+
+/* Shimmer Base Component */
+.skeleton {
+  background-color: var(--skeleton-base);
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background: var(--skeleton-shine);
+  animation: shimmer 1.8s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Card Component Structure */
+
+/* Header */
+.sk-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-grow: 1;
+}
+
+.name {
+  height: 14px;
+  width: 55%;
+  border-radius: 4px;
+}
+
+.username {
+  height: 10px;
+  width: 35%;
+  border-radius: 4px;
+}
+
+.action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Post Text / Body */
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.line {
+  height: 12px;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.line.medium {
+  width: 88%;
+}
+
+.line.short {
+  width: 60%;
+}
+
+/* Media / Image Box */
+.card-media {
+  width: 100%;
+  height: 230px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+/* Footer Actions */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid var(--card-border);
+}
+
+.footer-action {
+  height: 24px;
+  width: 68px;
+  border-radius: 20px;
+}

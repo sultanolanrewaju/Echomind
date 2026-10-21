@@ -1,0 +1,9 @@
+[build]
+  command = "npm install && npm run build"
+  publish = "dist"
+
+# Redirect all requests to index.html so React Router handles routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
